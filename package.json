@@ -1,7 +1,7 @@
 {
   "name": "@akashic/akashic-engine-standalone-release-action",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A repository to release standalone Akashic Engine script",
   "main": "lib/main.js",
   "scripts": {
@@ -51,10 +51,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@akashic-extension/akashic-box2d": "3.0.0-beta.0",
-    "@akashic-extension/akashic-label": "3.0.0-beta.1",
-    "@akashic-extension/akashic-timeline": "3.0.0-beta.2",
-    "@akashic/akashic-engine": "3.0.0-beta.37",
+    "@akashic-extension/akashic-box2d": "^3.0.0",
+    "@akashic-extension/akashic-label": "^3.0.1",
+    "@akashic-extension/akashic-timeline": "^3.0.0",
+    "@akashic/akashic-engine": "^3.0.4",
     "@akashic/eslint-config": "^0.1.1",
     "@akashic/pdi-browser": "2.0.0-beta.10",
     "@akashic/pdi-common-impl": "0.0.4",
