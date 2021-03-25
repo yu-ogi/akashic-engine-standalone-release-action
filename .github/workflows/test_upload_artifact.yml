@@ -16,17 +16,17 @@ jobs:
       - name: Update internal modules
         run: |
           npm ci
-          npm install @akashic/akashic-engine@latest
-          npm install @akashic-extension/akashic-box2d@latest
-          npm install @akashic-extension/akashic-label@latest
-          npm install @akashic-extension/akashic-timeline@latest
+          npm install @akashic/akashic-engine@latest --save-exact
+          npm install @akashic-extension/akashic-box2d@latest --save-exact
+          npm install @akashic-extension/akashic-label@latest --save-exact
+          npm install @akashic-extension/akashic-timeline@latest --save-exact
           npm run build
       - name: Bump package version
         run: npm version patch --no-git-tag-version
       - name: Get version of package.json
         id: version
         run: |
-          VERSION=`cat package.json | jq -r '.devDependencies["@akashic/akashic-engine"]' | sed -e 's/^[\^~]//'`
+          VERSION=`cat package.json | jq -r '.devDependencies["@akashic/akashic-engine"]'`
           echo "::set-output name=VERSION::$VERSION"
       - name: Archive artifact
         uses: actions/upload-artifact@v2
