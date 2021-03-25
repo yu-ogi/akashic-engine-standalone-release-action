@@ -45,9 +45,11 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          title: test pull request
+          title: update to akashic-engine@${{steps.version.outputs.VERSION}}
           branch: upload_artifact_file/${{steps.version.outputs.VERSION}}
           body: |
-            Workflow URL:
-            - ${{ steps.workflow.outputs.WORKFLOW_URL }}
+            ## このPullRequestが解決する内容
+            akashic-engine を ${{steps.version.outputs.VERSION}} に更新します。
+            ## 動作確認方法
+            [こちら](${{ steps.workflow.outputs.WORKFLOW_URL }}) から **output_${{ steps.version.outputs.VERSION }}.zip** をダウンロードして、手元で実行できるかを確認してください。
           delete-branch: true
