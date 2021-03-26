@@ -1,28 +1,40 @@
+name: Upload Distribution
+
 on:
   repository_dispatch:
-    types: ["upload_artifact"]
+    types: ["upload_dist"]
 
-name: Release and Upload Asset
+env:
+  cache-version: v1
 
 jobs:
   upload:
-    name: Upload Release Asset
+    name: Upload Distribution
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-version }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ env.cache-version }}-${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ env.cache-version }}-${{ runner.os }}-build-
+            ${{ env.cache-version }}-${{ runner.os }}-
       - name: Update internal modules
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npm install @akashic/akashic-engine@latest --save-exact
           npm install @akashic-extension/akashic-box2d@latest --save-exact
           npm install @akashic-extension/akashic-label@latest --save-exact
           npm install @akashic-extension/akashic-timeline@latest --save-exact
           npm run build
-      - name: Bump package version
-        run: npm version patch --no-git-tag-version
       - name: Get version of package.json
         id: version
         run: |
@@ -45,11 +57,11 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          title: update to akashic-engine@${{steps.version.outputs.VERSION}}
-          branch: upload_artifact_file/${{steps.version.outputs.VERSION}}
+          title: update to akashic-engine@${{ steps.version.outputs.VERSION }}
+          branch: upload_artifact_file/${{ steps.version.outputs.VERSION }}
           body: |
             ## このPullRequestが解決する内容
-            akashic-engine を ${{steps.version.outputs.VERSION}} に更新します。
+            akashic-engine を ${{ steps.version.outputs.VERSION }} に更新します。
             ## 動作確認方法
             [こちら](${{ steps.workflow.outputs.WORKFLOW_URL }}) から **output_${{ steps.version.outputs.VERSION }}.zip** をダウンロードして、手元で実行できるかを確認してください。
           delete-branch: true
