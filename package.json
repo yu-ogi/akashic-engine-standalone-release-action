@@ -49,7 +49,6 @@
       "@akashic/remark-preset-lint"
     ]
   },
-  "dependencies": {},
   "devDependencies": {
     "@akashic-extension/akashic-box2d": "3.0.0",
     "@akashic-extension/akashic-label": "3.0.1",
