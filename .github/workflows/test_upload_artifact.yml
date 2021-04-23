@@ -51,7 +51,10 @@ jobs:
       - uses: technote-space/get-diff-action@v4
         with:
           PATTERNS: |
-            .github/workflows/*.yml
+            src/**/*.ts
+            dist/**/*.js
+          FILES: |
+            package.json
       - name: Create commits
         run: |
           git config user.name '${{ github.actor }}'
