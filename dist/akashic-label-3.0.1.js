@@ -122,11 +122,11 @@ var Label = /** @class */ (function (_super) {
         var _this = _super.call(this, param) || this;
         _this.text = param.text;
         _this.font = param.font;
-        _this.fontSize = param.fontSize;
+        _this.fontSize = param.fontSize || param.font.size;
         _this._lineBreakWidth = param.width;
         _this.lineBreak = "lineBreak" in param ? param.lineBreak : true;
         _this.lineGap = param.lineGap || 0;
-        _this.textAlign = "textAlign" in param ? param.textAlign : g.TextAlign.Left;
+        _this.textAlign = "textAlign" in param ? param.textAlign : "left";
         _this.textColor = param.textColor;
         _this.trimMarginTop = "trimMarginTop" in param ? param.trimMarginTop : false;
         _this.widthAutoAdjust = "widthAutoAdjust" in param ? param.widthAutoAdjust : false;
@@ -194,7 +194,7 @@ var Label = /** @class */ (function (_super) {
      * 禁則処理によって行幅が this.width を超える場合があるため、 `g.CacheableE` のメソッドをオーバーライドする
      */
     Label.prototype.calculateCacheSize = function () {
-        // TODO: 最大値の候補に this.width を使用するのは textAlign が g.Center か g.Right の場合に描画に必要なキャッシュサイズを確保するためであり、
+        // TODO: 最大値の候補に this.width を使用するのは textAlign が "center" か "right" の場合に描画に必要なキャッシュサイズを確保するためであり、
         // 最大行幅に対して this.width が大きい場合、余分なキャッシュ領域を確保することになる。
         // これは g.CacheableE にキャッシュ描画位置を調整する cacheOffsetX を導入することで解決される。
         var maxWidth = Math.ceil(this._lines.reduce(function (width, line) { return Math.max(width, line.width); }, this.width));
@@ -215,10 +215,13 @@ var Label = /** @class */ (function (_super) {
     });
     Label.prototype._offsetX = function (width) {
         switch (this.textAlign) {
+            case "left":
             case g.TextAlign.Left:
                 return 0;
+            case "right":
             case g.TextAlign.Right:
                 return (this._lineBreakWidth - width);
+            case "center":
             case g.TextAlign.Center:
                 return ((this._lineBreakWidth - width) / 2);
             default:
