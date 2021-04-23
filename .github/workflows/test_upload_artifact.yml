@@ -49,6 +49,9 @@ jobs:
           name: output_${{ steps.version.outputs.VERSION }}
           path: ./dist
       - uses: technote-space/get-diff-action@v4
+        with:
+          PATTERNS: |
+            .github/workflows/*.yml
       - name: Create commits
         run: |
           git config user.name '${{ github.actor }}'
