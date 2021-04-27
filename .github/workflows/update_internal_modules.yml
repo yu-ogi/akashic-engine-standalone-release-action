@@ -1,0 +1,71 @@
+name: Update internal modules
+
+on:
+  schedule:
+    # everyday 00:00 (UTC+9)
+    - cron: "0 15 * * *"
+
+env:
+  cache-version: v1
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ env.cache-version }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ env.cache-version }}-${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ env.cache-version }}-${{ runner.os }}-build-
+            ${{ env.cache-version }}-${{ runner.os }}-
+      - name: Update internal modules
+        run: |
+          npm ci --ignore-scripts
+          npm install @akashic/akashic-engine@latest --save-exact
+          npm install @akashic-extension/akashic-box2d@latest --save-exact
+          npm install @akashic-extension/akashic-label@latest --save-exact
+          npm install @akashic-extension/akashic-timeline@latest --save-exact
+          npm run build
+      - name: Get version of package.json
+        id: version
+        run: |
+          LATEST_VERSION=`cat package.json | jq -r '.devDependencies["@akashic/akashic-engine"]'`
+          echo "::set-output name=LATEST_VERSION::$LATEST_VERSION"
+      - name: Get workflow url
+        id: workflow
+        run: echo "::set-output name=WORKFLOW_URL::$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - name: Archive artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: output_${{ steps.version.outputs.LATEST_VERSION }}
+          path: ./dist
+      - name: Get diff files
+        id: diff
+        run: |
+          echo "::set-output name=count::$(git diff --name-only | wc -l)"
+      - name: Create commits
+        if: 0 < steps.diff.outputs.count
+        run: |
+          git config user.name 'github-actions'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Update to ${{ steps.version.outputs.LATEST_VERSION }}"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        if: 0 < steps.diff.outputs.count
+        with:
+          title: update to akashic-engine@${{ steps.version.outputs.LATEST_VERSION }}
+          branch: update_akashic_engine/${{ steps.version.outputs.LATEST_VERSION }}
+          body: |
+            ## このPullRequestが解決する内容
+            akashic-engine を ${{ steps.version.outputs.LATEST_VERSION }} に更新します。
+            ## 動作確認方法
+            [こちら](${{ steps.workflow.outputs.WORKFLOW_URL }}) から **output_${{ steps.version.outputs.LATEST_VERSION }}.zip** をダウンロードして、手元で実行できるかを確認してください。
+          delete-branch: true

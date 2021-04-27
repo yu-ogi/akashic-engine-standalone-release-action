@@ -6,7 +6,7 @@
   "main": "lib/main.js",
   "scripts": {
     "prepare": "npm run build",
-    "pre-commit": "npm run build && npm t",
+    "pre-commit": "npm t",
     "build": "rimraf \"./dist/**/{akashic-*,index*}.{js,html}\" && npm run format && run-s build:*",
     "build:dev": "webpack --config webpack.dev.js",
     "build:prod": "webpack --config webpack.prod.js",
@@ -72,7 +72,7 @@
     "prettier": "^2.1.1",
     "remark-cli": "^8.0.1",
     "rimraf": "^3.0.2",
-    "semver": "^7.3.2",
+    "semver": "^7.3.5",
     "ts-loader": "^8.0.3",
     "typescript": "^4.0.2",
     "url-join": "^4.0.1",
